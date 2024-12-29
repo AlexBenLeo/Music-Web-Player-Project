@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player Design</title>
+    <link rel="stylesheet" href="webplayer.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="music-player">
+        <nav>
+            <div class="circle">
+                <i class="fas fa-angle-left"></i>
+            </div>
+            <div class="circle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+
+        <img src="Images/eminemthemonster.png" class="song-img" id="thumbnail">
+        <h1 id="songTitle">The Monster</h1>
+        <p id="artist">Eminem and Rihanna</p>
+        <audio id="song">
+            <source id="audioSource" src="Images/eminemthemonster.mp3" type="audio/mpeg">
+        </audio>
+
+        <input type="range" value="0" id="progress">
+
+        <div class="controls">
+            <div onclick="prevSong()"><i class="fas fa-backward"></i></div>
+            <div onclick="playPause()"><i class="fas fa-play" id="ctrlIcon"></i></div>
+            <div onclick="nextSong()"><i class="fas fa-forward"></i></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Song data
+const songs = [
+    {
+        title: "The Monster",
+        artist: "Eminem and Rihanna",
+        src: "Images/eminemthemonster.mp3",
+        thumbnail: "Images/eminemthemonster.jpg",
+    },
+    {
+        title: "River",
+        artist: "Eminem and Ed Sheeran",
+        src: "Images/eminemriver.mp3",
+        thumbnail: "Images/eminemriver.jpeg",
+    },
+    {
+        title: "Not Afraid",
+        artist: "Eminem",
+        src: "Images/eminemnotafraid.mp3",
+        thumbnail: "Images/eminemnotafraid.jpeg",
+    },
+];
+
+// DOM elements
+let progress = document.getElementById("progress");
+let song = document.getElementById("song");
+let ctrlIcon = document.getElementById("ctrlIcon");
+let songTitle = document.getElementById("songTitle");
+let artist = document.getElementById("artist");
+let thumbnail = document.getElementById("thumbnail");
+
+let currentSongIndex = 0;
+
+function loadSong(index) {
+    songTitle.textContent = songs[index].title;
+    artist.textContent = songs[index].artist;
+    thumbnail.src = songs[index].thumbnail;
+    song.src = songs[index].src;
+    progress.value = 0;
+    ctrlIcon.classList.remove("fa-pause");
+    ctrlIcon.classList.add("fa-play");
+}
+
+// Play or pause the song
+function playPause() {
+    if (ctrlIcon.classList.contains("fa-pause")) {
+        song.pause();
+        ctrlIcon.classList.remove("fa-pause");
+        ctrlIcon.classList.add("fa-play");
+    } else {
+        song.play();
+        ctrlIcon.classList.add("fa-pause");
+        ctrlIcon.classList.remove("fa-play");
+    }
+}
+
+// Update progress bar
+song.onloadedmetadata = function () {
+    progress.max = song.duration;
+    progress.value = song.currentTime;
+};
+
+if (song.play()) {
+    setInterval(() => {
+        progress.value = song.currentTime;
+    }, 500);
+}
+
+progress.onchange = function () {
+    song.currentTime = progress.value;
+    song.play();
+    ctrlIcon.classList.add("fa-pause");
+    ctrlIcon.classList.remove("fa-play");
+};
+
+// Next and previous songs
+function nextSong() {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    loadSong(currentSongIndex);
+    song.play();
+    ctrlIcon.classList.add("fa-pause");
+    ctrlIcon.classList.remove("fa-play");
+}
+
+function prevSong() {
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    loadSong(currentSongIndex);
+    song.play();
+    ctrlIcon.classList.add("fa-pause");
+    ctrlIcon.classList.remove("fa-play");
+}
+
+// Initial load
+loadSong(currentSongIndex);
+</script>
+</body>
+</html>
